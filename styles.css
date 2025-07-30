@@ -1,0 +1,1437 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: #0a0a0a;
+    min-height: 100vh;
+    color: #e0e0e0;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+header {
+    background: rgba(20, 20, 20, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 30px;
+    text-align: center;
+    margin-bottom: 30px;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+}
+
+header h1 {
+    font-size: 2.5em;
+    font-weight: 700;
+    background: linear-gradient(135deg, #ff6b6b 0%, #ffa502 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 10px;
+}
+
+#fecha {
+    color: #888;
+    font-weight: 500;
+}
+
+.tabs {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 30px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.tab-button {
+    padding: 15px 30px;
+    background: rgba(30, 30, 30, 0.9);
+    color: #e0e0e0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.tab-button:hover {
+    transform: translateY(-2px);
+    background: rgba(40, 40, 40, 0.9);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.tab-button.active {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ffa502 100%);
+    color: white;
+    border: none;
+    transform: scale(1.05);
+}
+
+.tab-content {
+    display: none;
+    background: rgba(20, 20, 20, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.tab-content h2 {
+    color: #fff;
+    margin-bottom: 25px;
+    font-size: 2em;
+    font-weight: 700;
+}
+
+.mesas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 25px;
+    margin-bottom: 30px;
+}
+
+.mesa {
+    background: rgba(30, 30, 30, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 25px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.mesa::before {
+    content: '🪑';
+    position: absolute;
+    font-size: 80px;
+    opacity: 0.05;
+    right: -20px;
+    bottom: -20px;
+    transform: rotate(-15deg);
+}
+
+.mesa:hover {
+    transform: translateY(-5px);
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+}
+
+.mesa.ocupada {
+    background: rgba(255, 107, 107, 0.2);
+    border-color: rgba(255, 107, 107, 0.5);
+}
+
+.mesa h3 {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+    font-weight: 700;
+    color: #fff;
+}
+
+.mesa p {
+    font-size: 1.2em;
+    font-weight: 600;
+    color: #ffa502;
+}
+
+.productos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 15px;
+    margin: 25px 0;
+}
+
+.producto-btn {
+    padding: 10px;
+    background: rgba(30, 30, 30, 0.9);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    font-size: 14px;
+    min-height: 140px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 5px;
+    position: relative;
+    overflow: hidden;
+}
+
+.producto-btn img {
+    transition: transform 0.3s ease;
+}
+
+.producto-btn:hover img {
+    transform: scale(1.1);
+}
+
+.producto-btn:hover {
+    transform: translateY(-3px);
+    background: rgba(255, 107, 107, 0.2);
+    border-color: rgba(255, 107, 107, 0.5);
+}
+
+.ticket {
+    background: rgba(30, 30, 30, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 25px;
+    border-radius: 15px;
+    margin-top: 25px;
+    max-height: 300px;
+    display: flex;
+    flex-direction: column;
+}
+
+.ticket h3 {
+    color: #fff;
+    margin-bottom: 15px;
+    font-weight: 700;
+}
+
+#ticketItems {
+    overflow-y: auto;
+    max-height: 200px;
+    padding-right: 10px;
+}
+
+#ticketItems::-webkit-scrollbar {
+    width: 8px;
+}
+
+#ticketItems::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+}
+
+#ticketItems::-webkit-scrollbar-thumb {
+    background: rgba(255, 107, 107, 0.5);
+    border-radius: 10px;
+}
+
+#ticketItems::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 107, 107, 0.7);
+}
+
+.ticket-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    font-weight: 500;
+    color: #e0e0e0;
+}
+
+.total {
+    font-size: 24px;
+    font-weight: 700;
+    color: #ffa502;
+    margin-top: 15px;
+    text-align: right;
+    padding-top: 15px;
+    border-top: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+button {
+    padding: 12px 25px;
+    margin: 5px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background: #4a5568;
+    color: white;
+}
+
+.btn-success {
+    background: #22c55e;
+    color: white;
+}
+
+.btn-danger {
+    background: #ef4444;
+    color: white;
+}
+
+.btn-warning {
+    background: #f59e0b;
+    color: white;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.2);
+}
+
+.facturacion-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 25px;
+    background: rgba(30, 30, 30, 0.9);
+    border-radius: 15px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.facturacion-table th,
+.facturacion-table td {
+    padding: 15px;
+    text-align: left;
+    color: #e0e0e0;
+}
+
+.facturacion-table th {
+    background: rgba(255, 107, 107, 0.2);
+    font-weight: 600;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.facturacion-table tr:nth-child(even) {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.facturacion-table tr:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0.8);
+    z-index: 1000;
+    backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    position: relative;
+    background: rgba(20, 20, 20, 0.98);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    margin: 2% auto;
+    padding: 30px;
+    width: 90%;
+    max-width: 700px;
+    max-height: 90vh;
+    overflow-y: auto;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    animation: slideIn 0.3s ease;
+}
+
+.modal-content::-webkit-scrollbar {
+    width: 10px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+    background: rgba(255, 107, 107, 0.5);
+    border-radius: 10px;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.close {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    font-size: 35px;
+    cursor: pointer;
+    color: #666;
+    transition: color 0.3s ease;
+}
+
+.close:hover {
+    color: #ff6b6b;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 25px;
+    margin: 30px 0;
+}
+
+.stat-card {
+    background: rgba(30, 30, 30, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 30px;
+    border-radius: 20px;
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(255, 107, 107, 0.3);
+}
+
+.stat-card h4 {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+    color: #888;
+}
+
+.stat-card .value {
+    font-size: 2.5em;
+    font-weight: 700;
+    color: #ffa502;
+}
+
+h3 {
+    color: #fff;
+    margin-top: 30px;
+    margin-bottom: 15px;
+    font-size: 1.5em;
+    font-weight: 700;
+}
+
+.mesa.ocupada::after {
+    content: '';
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 12px;
+    height: 12px;
+    background: #ff6b6b;
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.7);
+    }
+
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 107, 107, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 107, 107, 0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutRight {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+/* Estilos adicionales para modal de edición */
+#editarProductoModal .modal-content {
+    animation: fadeInScale 0.3s ease;
+}
+
+@keyframes fadeInScale {
+    from {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Mejoras en botones de la lista de productos */
+#listaProductos button:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.2);
+}
+
+/* Estilos para inputs en modal de edición */
+#editarProductoModal input:focus {
+    outline: none;
+    border-color: rgba(255, 107, 107, 0.5);
+    box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.2);
+}
+
+/* Responsive para botones en lista de productos */
+@media (max-width: 768px) {
+    #listaProductos div[style*="display: flex"] {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start !important;
+    }
+
+    #listaProductos div[style*="display: flex"]>div:last-child {
+        width: 100%;
+        justify-content: space-between;
+    }
+}
+
+/* Estilos para gestión de mesas */
+#gestionMesaModal .modal-content {
+    animation: slideInDown 0.3s ease;
+}
+
+@keyframes slideInDown {
+    from {
+        transform: translateY(-30px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Estilos para lista de mesas */
+#listaMesas {
+    background: rgba(20, 20, 20, 0.5);
+}
+
+#listaMesas>div:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* Estilos para botones de gestión de mesas */
+#listaMesas button:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.2);
+}
+
+/* Estilos para textarea */
+#gestionMesaDescripcion {
+    font-family: 'Inter', sans-serif;
+}
+
+#gestionMesaDescripcion:focus {
+    outline: none;
+    border-color: rgba(255, 107, 107, 0.5);
+    box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.2);
+}
+
+/* Responsive para gestión de mesas */
+@media (max-width: 768px) {
+    #listaMesas div[style*="display: flex"] {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start !important;
+    }
+
+    #listaMesas div[style*="display: flex"]>div:last-child {
+        width: 100%;
+        justify-content: flex-start;
+        gap: 10px;
+    }
+}
+
+/* Estilos para registro de pedidos */
+.tab-content#pedidos {
+    animation: fadeInUp 0.5s ease;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Estilos para filtros de pedidos */
+#pedidos input[type="date"],
+#pedidos input[type="time"],
+#pedidos select {
+    transition: all 0.3s ease;
+}
+
+#pedidos input[type="date"]:focus,
+#pedidos input[type="time"]:focus,
+#pedidos select:focus {
+    outline: none;
+    border-color: rgba(255, 107, 107, 0.5);
+    box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.2);
+}
+
+/* Estilos para cards de estadísticas por hora */
+#estadisticasHora>div {
+    border-left: 4px solid transparent;
+    transition: all 0.3s ease;
+}
+
+#estadisticasHora>div:hover {
+    border-left-color: #ffa502;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Estilos para lista de pedidos */
+#listaPedidos {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 107, 107, 0.5) rgba(255, 255, 255, 0.05);
+}
+
+#listaPedidos::-webkit-scrollbar {
+    width: 8px;
+}
+
+#listaPedidos::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+}
+
+#listaPedidos::-webkit-scrollbar-thumb {
+    background: rgba(255, 107, 107, 0.5);
+    border-radius: 10px;
+}
+
+#listaPedidos::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 107, 107, 0.7);
+}
+
+/* Animación para items de pedidos */
+#listaPedidos>div {
+    animation: slideInLeft 0.3s ease;
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Responsive para filtros */
+@media (max-width: 768px) {
+    #pedidos .grid-template-columns {
+        grid-template-columns: 1fr;
+    }
+
+    #estadisticasHora {
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)) !important;
+    }
+
+    #listaPedidos>div>div:first-child {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start !important;
+    }
+}
+
+/* Estilos para botones de pedidos */
+#pedidos button {
+    white-space: nowrap;
+}
+
+#pedidos .btn-primary:hover {
+    background: #5a67d8;
+}
+
+#pedidos .btn-warning:hover {
+    background: #ed8936;
+}
+
+#pedidos .btn-success:hover {
+    background: #38a169;
+}
+
+/* Estilos para la pestaña de registro de pedidos */
+.tab-content#pedidos {
+    animation: fadeInUp 0.5s ease;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Estilos para filtros de pedidos */
+#pedidos input[type="date"],
+#pedidos input[type="time"],
+#pedidos select {
+    transition: all 0.3s ease;
+    font-family: 'Inter', sans-serif;
+}
+
+#pedidos input[type="date"]:focus,
+#pedidos input[type="time"]:focus,
+#pedidos select:focus {
+    outline: none;
+    border-color: rgba(255, 107, 107, 0.5);
+    box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.2);
+    transform: translateY(-1px);
+}
+
+/* Estilos para cards de estadísticas por hora */
+#estadisticasHora {
+    animation: slideInDown 0.6s ease;
+}
+
+#estadisticasHora>div {
+    border-left: 4px solid transparent;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+#estadisticasHora>div::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, transparent, rgba(255, 107, 107, 0.1), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+#estadisticasHora>div:hover::before {
+    opacity: 1;
+}
+
+#estadisticasHora>div:hover {
+    border-left-color: #ffa502;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    transform: translateY(-5px);
+}
+
+/* Estilos para lista de pedidos */
+#listaPedidos {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 107, 107, 0.5) rgba(255, 255, 255, 0.05);
+}
+
+#listaPedidos::-webkit-scrollbar {
+    width: 8px;
+}
+
+#listaPedidos::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+}
+
+#listaPedidos::-webkit-scrollbar-thumb {
+    background: rgba(255, 107, 107, 0.5);
+    border-radius: 10px;
+    transition: background 0.3s ease;
+}
+
+#listaPedidos::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 107, 107, 0.7);
+}
+
+/* Animación para items de pedidos */
+#listaPedidos>div {
+    animation: slideInLeft 0.4s ease;
+    animation-fill-mode: both;
+}
+
+#listaPedidos>div:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+#listaPedidos>div:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+#listaPedidos>div:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+#listaPedidos>div:nth-child(4) {
+    animation-delay: 0.4s;
+}
+
+#listaPedidos>div:nth-child(5) {
+    animation-delay: 0.5s;
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Estilos para botones de pedidos */
+#pedidos button {
+    white-space: nowrap;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+#pedidos .btn-primary:hover {
+    background: #5a67d8;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(90, 103, 216, 0.4);
+}
+
+#pedidos .btn-warning:hover {
+    background: #ed8936;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(237, 137, 54, 0.4);
+}
+
+#pedidos .btn-success:hover {
+    background: #38a169;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(56, 161, 105, 0.4);
+}
+
+/* Efectos para botones dentro de items de pedidos */
+#listaPedidos button:hover {
+    background: #5a67d8 !important;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(90, 103, 216, 0.3);
+}
+
+/* Estilos para el card de resumen total */
+#estadisticasHora>div:first-child {
+    background: linear-gradient(135deg, rgba(255, 107, 107, 0.1), rgba(255, 165, 2, 0.1));
+    border: 1px solid rgba(255, 107, 107, 0.3);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.4);
+    }
+
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 107, 107, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 107, 107, 0);
+    }
+}
+
+/* Responsive para filtros */
+@media (max-width: 768px) {
+    #pedidos .grid-template-columns {
+        grid-template-columns: 1fr !important;
+    }
+
+    #estadisticasHora {
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)) !important;
+    }
+
+    #listaPedidos>div>div:first-child {
+        flex-direction: column !important;
+        gap: 10px !important;
+        align-items: flex-start !important;
+    }
+
+    #listaPedidos>div>div:first-child>div:last-child {
+        align-self: flex-end;
+    }
+}
+
+/* Estilos para labels de filtros */
+#pedidos label {
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 0.8em;
+    letter-spacing: 0.5px;
+}
+
+/* Efectos adicionales para inputs */
+#pedidos input:hover,
+#pedidos select:hover {
+    border-color: rgba(255, 107, 107, 0.3);
+}
+
+/* Estilos para mensajes vacíos */
+#listaPedidos p,
+#estadisticasHora p {
+    animation: fadeIn 0.5s ease;
+    font-style: italic;
+}
+
+/* Separador visual entre secciones */
+#pedidos>div {
+    position: relative;
+}
+
+#pedidos>div:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    bottom: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(255, 107, 107, 0.5), transparent);
+}
+
+/* =================================== */
+/* ESTILOS PARA TECLADOS VIRTUALES */
+/* =================================== */
+
+/* Teclado Numérico Virtual */
+.teclado-numerico {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2000;
+    background: rgba(20, 20, 20, 0.98);
+    border: 2px solid rgba(255, 107, 107, 0.3);
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateX(-50%) translateY(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+    }
+}
+
+.teclado-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.teclado-display {
+    background: rgba(40, 40, 40, 0.9);
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.teclado-display input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: #ffa502;
+    font-size: 28px;
+    font-weight: bold;
+    text-align: right;
+    outline: none;
+}
+
+.teclado-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.tecla-num {
+    background: rgba(40, 40, 40, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 25px;
+    font-size: 24px;
+    font-weight: bold;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.tecla-num:hover {
+    background: rgba(255, 107, 107, 0.2);
+    transform: translateY(-2px);
+    border-color: rgba(255, 107, 107, 0.5);
+}
+
+.tecla-num:active {
+    transform: translateY(0);
+}
+
+.tecla-func {
+    background: rgba(60, 60, 60, 0.9);
+    color: #ffa502;
+}
+
+.tecla-func:hover {
+    background: rgba(255, 165, 2, 0.2);
+    border-color: rgba(255, 165, 2, 0.5);
+}
+
+.tecla-borrar {
+    font-size: 28px;
+}
+
+.tecla-ok {
+    background: rgba(34, 197, 94, 0.2);
+    color: #22c55e;
+    font-size: 32px;
+}
+
+.tecla-ok:hover {
+    background: rgba(34, 197, 94, 0.3);
+    border-color: rgba(34, 197, 94, 0.5);
+}
+
+.tecla-cero {
+    grid-column: span 2;
+}
+
+.tecla-cerrar {
+    width: 100%;
+    margin-top: 10px;
+    background: rgba(239, 68, 68, 0.2);
+    border: 1px solid rgba(239, 68, 68, 0.5);
+    color: #ef4444;
+    padding: 12px;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.tecla-cerrar:hover {
+    background: rgba(239, 68, 68, 0.3);
+}
+
+/* Teclado Completo Virtual */
+.teclado-completo {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2000;
+    background: rgba(20, 20, 20, 0.98);
+    border: 2px solid rgba(255, 107, 107, 0.3);
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+    animation: slideUp 0.3s ease;
+    max-width: 90%;
+}
+
+.teclado-grid-completo {
+    display: grid;
+    grid-template-columns: repeat(11, 1fr);
+    gap: 8px;
+    margin-top: 15px;
+}
+
+.tecla {
+    background: rgba(40, 40, 40, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 15px 10px;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 45px;
+}
+
+.tecla:hover {
+    background: rgba(255, 107, 107, 0.2);
+    transform: translateY(-2px);
+    border-color: rgba(255, 107, 107, 0.5);
+}
+
+.tecla:active {
+    transform: translateY(0);
+}
+
+/* Botón OK verde en teclado completo */
+.teclado-completo .tecla-ok {
+    background: rgba(34, 197, 94, 0.2);
+    color: #22c55e;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.teclado-completo .tecla-ok:hover {
+    background: rgba(34, 197, 94, 0.3);
+    border-color: rgba(34, 197, 94, 0.5);
+    transform: translateY(-2px);
+}
+
+.teclado-completo .tecla-ok:active {
+    transform: translateY(0);
+}
+
+.tecla-espacio {
+    grid-column: span 8;
+}
+
+.tecla-espacio {
+    grid-column: span 8;
+    background: rgba(40, 40, 40, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 15px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 10px;
+}
+
+.tecla-espacio:hover {
+    background: rgba(255, 107, 107, 0.2);
+    border-color: rgba(255, 107, 107, 0.5);
+}
+
+.teclado-fila-inferior {
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+#tecladoCompletoInput {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: #ffa502;
+    font-size: 24px;
+    font-weight: bold;
+    text-align: left;
+    outline: none;
+}
+
+/* Responsive para teclados */
+@media (max-width: 768px) {
+    .teclado-numerico {
+        width: 95%;
+        bottom: 10px;
+    }
+
+    .tecla-num {
+        padding: 20px;
+        font-size: 20px;
+    }
+
+    .teclado-completo {
+        width: 95%;
+        bottom: 10px;
+        padding: 15px;
+    }
+
+    .tecla {
+        padding: 12px 8px;
+        font-size: 16px;
+        min-width: 35px;
+    }
+
+    .teclado-grid-completo {
+        gap: 5px;
+    }
+}
+
+/* Estilos específicos para dispositivos táctiles */
+.dispositivo-tactil input[readonly] {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    cursor: pointer !important;
+}
+
+.dispositivo-tactil input[readonly]:hover {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Indicador visual de campo con teclado virtual */
+.dispositivo-tactil input[readonly]::placeholder {
+    color: #888;
+}
+
+.dispositivo-tactil input[readonly]:focus {
+    outline: 2px solid rgba(255, 165, 2, 0.5);
+    outline-offset: 2px;
+}
+
+/* Estilos para el switch de configuración */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 30px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(60, 60, 60, 0.9);
+    transition: 0.4s;
+    border-radius: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 22px;
+    width: 22px;
+    left: 4px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+}
+
+.switch input:checked+.slider {
+    background-color: #ffa502;
+    border-color: #ffa502;
+}
+
+.switch input:checked+.slider:before {
+    transform: translateX(30px);
+}
+
+.switch:hover .slider {
+    box-shadow: 0 0 10px rgba(255, 165, 2, 0.5);
+}
+
+/* Animación de pulse para botón Pro */
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 165, 2, 0.7);
+    }
+
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 165, 2, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 165, 2, 0);
+    }
+}
+
+/* Estilos para planes de precios */
+#modalPremium .modal-content {
+    background: linear-gradient(135deg, rgba(20, 20, 20, 0.98), rgba(30, 30, 30, 0.98));
+}
+
+/* Efecto hover para planes */
+#modalPremium button:not(:disabled):hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+}
+
+/* Plan Pro destacado */
+#modalPremium .btn-warning {
+    background: linear-gradient(135deg, #ff6b6b, #ffa502);
+    border: none;
+    position: relative;
+    overflow: hidden;
+}
+
+#modalPremium .btn-warning::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+#modalPremium .btn-warning:hover::before {
+    left: 100%;
+}
+
+/* Plan Premium brillante */
+#modalPremium .btn-success[onclick*="premium"] {
+    position: relative;
+    overflow: hidden;
+    font-weight: bold;
+}
+
+#modalPremium .btn-success[onclick*="premium"]::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    bottom: -50%;
+    left: -50%;
+    background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transform: rotate(45deg);
+    animation: shine 3s infinite;
+}
+
+@keyframes shine {
+    0% {
+        transform: translateX(-100%) translateY(-100%) rotate(45deg);
+    }
+
+    100% {
+        transform: translateX(100%) translateY(100%) rotate(45deg);
+    }
+}
+
+/* Responsive para modal de precios */
+@media (max-width: 968px) {
+    #modalPremium .modal-content {
+        max-width: 95%;
+        padding: 20px;
+    }
+
+    #modalPremium h2 {
+        font-size: 2em !important;
+    }
+}
+
+/* Badge de más popular */
+#modalPremium [style*="MÁS POPULAR"] {
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+
+    0%,
+    20%,
+    50%,
+    80%,
+    100% {
+        transform: translateX(-50%) translateY(0);
+    }
+
+    40% {
+        transform: translateX(-50%) translateY(-10px);
+    }
+
+    60% {
+        transform: translateX(-50%) translateY(-5px);
+    }
+}
+
+/* Efecto de brillo para elementos premium */
+.brillo-premium {
+    background: linear-gradient(270deg, #ffd700, #ffed4e, #ffd700);
+    background-size: 200% 200%;
+    animation: brilloPremium 3s ease infinite;
+}
+
+@keyframes brilloPremium {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}

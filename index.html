@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bar Cafetería - Sistema de Gestión</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>☕ Bar Cafetería Premium ☕</h1>
+            <p id="fecha"></p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-button active" onclick="showTab('mesas')">🪑 Control de Mesas</button>
+            <button class="tab-button" onclick="showTab('pedidos')">📋 Registro de Pedidos</button>
+            <button class="tab-button" onclick="showTab('inventario')">📦 Gestión de Inventario</button>
+            <button class="tab-button" onclick="showTab('facturacion')">📊 Facturación</button>
+            <button class="tab-button" onclick="showTab('configuracion')">⚙️ Configuración</button>
+        </div>
+
+        <!-- Tab Mesas -->
+        <div id="mesas" class="tab-content active">
+            <h2>Control de Mesas</h2>
+            <div class="mesas-grid" id="mesasGrid"></div>
+        </div>
+
+        <!-- Tab Gestión de Inventario -->
+        <div id="inventario" class="tab-content">
+            <h2>📦 Gestión de Inventario</h2>
+
+            <!-- Resumen de Alertas -->
+            <div id="alertasInventario" style="margin-bottom: 25px;"></div>
+
+            <!-- Filtros y Búsqueda -->
+            <div
+                style="background: rgba(30, 30, 30, 0.9); padding: 20px; border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 25px;">
+                <h3 style="color: #ffa502; margin-bottom: 15px;">🔍 Filtros y Búsqueda</h3>
+                <div
+                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; align-items: end;">
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; color: #888;">🔍 Buscar producto:</label>
+                        <input type="text" id="buscarProducto" placeholder="Nombre del producto..."
+                            oninput="filtrarInventario()"
+                            style="width: 100%; padding: 10px; background: rgba(40, 40, 40, 0.9); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: white;">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; color: #888;">📊 Estado del stock:</label>
+                        <select id="filtroStock" onchange="filtrarInventario()"
+                            style="width: 100%; padding: 10px; background: rgba(40, 40, 40, 0.9); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: white;">
+                            <option value="todos">Todos los productos</option>
+                            <option value="normal">Stock normal</option>
+                            <option value="bajo">Stock bajo</option>
+                            <option value="agotado">Sin stock</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; color: #888;">🏢 Área:</label>
+                        <select id="filtroArea" onchange="filtrarInventario()"
+                            style="width: 100%; padding: 10px; background: rgba(40, 40, 40, 0.9); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: white;">
+                            <!-- Se llenará dinámicamente -->
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; color: #888;">📂 Categoría:</label>
+                        <select id="filtroCategoria" onchange="filtrarInventario()"
+                            style="width: 100%; padding: 10px; background: rgba(40, 40, 40, 0.9); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: white;">
+                            <!-- Se llenará dinámicamente -->
+                        </select>
+                    </div>
+                    <button class="btn-warning" onclick="limpiarFiltrosInventario()">🔄 Limpiar</button>
+                </div>
+            </div>
+
+            <!-- Acciones Rápidas -->
+            <div
+                style="background: rgba(30, 30, 30, 0.9); padding: 20px; border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 25px;">
+                <h3 style="color: #ffa502; margin-bottom: 15px;">⚡ Acciones Rápidas</h3>
+                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                    <button class="btn-success" onclick="abrirModalReabastecimiento()">📈 Reabastecer Todo</button>
+                    <button class="btn-warning" onclick="exportarInventarioCSV()">📥 Exportar Inventario</button>
+                    <button class="btn-primary" onclick="mostrarHistorialMovimientos()">📋 Historial de
+                        Movimientos</button>
+                    <button class="btn-primary" onclick="abrirModalAjusteStock()">⚖️ Ajuste Manual</button>
+                </div>
+            </div>
+
+            <!-- Lista de Productos del Inventario -->
+            <div
+                style="background: rgba(30, 30, 30, 0.9); padding: 20px; border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                <h3 style="color: #ffa502; margin-bottom: 20px;">📦 Productos en Inventario</h3>
+                <div id="listaInventario" style="max-height: 600px; overflow-y: auto;"></div>
+            </div>
+        </div>
+
+        <!-- Tab Facturación -->
+        <div id="facturacion" class="tab-content">
+            <h2>Resumen de Facturación</h2>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h4>💰 Hoy</h4>
+                    <div class="value" id="facturacionHoy">€0.00</div>
+                </div>
+                <div class="stat-card">
+                    <h4>📅 Esta Semana</h4>
+                    <div class="value" id="facturacionSemana">€0.00</div>
+                </div>
+                <div class="stat-card">
+                    <h4>📈 Este Mes</h4>
+                    <div class="value" id="facturacionMes">€0.00</div>
+                </div>
+                <div class="stat-card">
+                    <h4>📊 <span id="nombreTrimestre">Este Trimestre</span></h4>
+                    <div class="value" id="facturacionTrimestre">€0.00</div>
+                </div>
+            </div>
+
+            <h3>📊 Detalle Diario</h3>
+            <table class="facturacion-table">
+                <thead>
+                    <tr>
+                        <th>Día</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody id="facturacionDiaria"></tbody>
+            </table>
+
+            <h3>📈 Resumen Semanal</h3>
+            <table class="facturacion-table">
+                <thead>
+                    <tr>
+                        <th>Semana</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody id="facturacionSemanal"></tbody>
+            </table>
+        </div>
+
+        <!-- Tab Configuración -->
+        <div id="configuracion" class="tab-content">
+            <h2>Configuración del Sistema</h2>
+
+            <div style="margin: 30px 0;">
+                <h3>📦 Gestión de Productos</h3>
+                <div
+                    style="background: rgba(30, 30, 30, 0.9); padding: 20px; border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                    <h4 style="color: #ffa502; margin-bottom: 20px;">➕ Agregar Nuevo Producto</h4>
+
+                    <div style="display: flex; flex-direction: column; gap: 20px;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
+                            <div>
+                                <label style="display: block; margin-bottom: 5px; color: #888;">Nombre:</label>
+                                <input type="text" id="nuevoNombre" placeholder="Nombre del producto"
+                                    style="width: 100%; padding: 10px; background: rgba(40, 40, 40, 0.9); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: white;">
+                            </div>
+                            <div>
+                                <label style="display: block; margin-bottom: 5px; color: #888;">Precio (€):</label>
+                                <input type="number" id="nuevoPrecio" placeholder="0.00" step="0.10" min="0"
+                                    style="width: 100%; padding: 10px; background: rgba(40, 40, 40, 0.9); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: white;">
+                            </div>
+                            <div>
+                                <label style="display: block; margin-bottom: 5px; color: #888;">Categoría: <span
+                                        style="color: #ff6b6b;">*</span></label>
+                                <select id="nuevaCategoria"
+                                    style="width: 100%; padding: 10px; background: rgba(40, 40, 40, 0.9); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: white;">
+                                    <!-- Se llenará dinámicamente -->
+                                </select>
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 150px 150px; gap: 15px;">
+                            <div>
+                                <label style="display: block; margin-bottom: 5px; color: #888;">Área (opcional):</label>
+                                <select id="nuevaArea"
+                                    style="width: 100%; padding: 10px; background: rgba(40, 40, 40, 0.9); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: white;">
+                                    <!-- Se llenará dinámicamente -->
+                                </select>
+                            </div>
+                            <div>
+                                <label style="display: block; margin-bottom: 5px; color: #888;">Visual del
+                                    Producto:</label>
+                                <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 10px;">
+                                    <button type="button" onclick="toggleSelectorVisual('emoji')" id="btnEmoji"
+                                        style="padding: 8px 12px; background: #4a5568; border: none; border-radius: 5px; color: white; cursor: pointer;">😀
+                                        Emoji</button>
+                                    <button type="button" onclick="toggleSelectorVisual('imagen')" id="btnImagen"
+                                        style="padding: 8px 12px; background: #2d3748; border: none; border-radius: 5px; color: white; cursor: pointer;">🖼️
+                                        Imagen</button>
+                                </div>
+
+                                <div id="selectorEmoji" style="display: block;">
+                                    <input type="text" id="nuevoEmoji" value="🍽️" readonly
+                                        style="width: 80px; padding: 10px; background: rgba(40, 40, 40, 0.9); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: white; text-align: center;
+                                                                                font-size: 24px; cursor: pointer; margin-bottom: 10px;">
+                                    <div
+                                        style="display: flex; flex-wrap: wrap; gap: 5px; padding: 10px; background: rgba(30, 30, 30, 0.9); border-radius: 8px; max-height: 100px; overflow-y: auto;">
+                                        <span onclick="seleccionarEmoji('☕')"
+                                            style="cursor: pointer; padding: 5px; font-size: 24px; border-radius: 5px; background: rgba(255,255,255,0.05);"
+                                            title="Café">☕</span>
+                                        <span onclick="seleccionarEmoji('🥤')"
+                                            style="cursor: pointer; padding: 5px; font-size: 24px; border-radius: 5px; background: rgba(255,255,255,0.05);"
+                                            title="Refresco">🥤</span>
+                                        <span onclick="seleccionarEmoji('🍺')"
+                                            style="cursor: pointer; padding: 5px; font-size: 24px; border-radius: 5px; background: rgba(255,255,255,0.05);"
+                                            title="Cerveza">🍺</span>
+                                        <span onclick="seleccionarEmoji('🍷')"
+                                            style="cursor: pointer; padding: 5px; font-size: 24px; border-radius: 5px; background: rgba(255,255,255,0.05);"
+                                            title="Vino">🍷</span>
+                                        <span onclick="seleccionarEmoji('🍹')"
+                                            style="cursor: pointer; padding: 5px; font-size: 24px; border-radius: 5px; background: rgba(255,255,255,0.05);"
+                                            title="Cóctel">🍹</span>
+                                        <span onclick="seleccionarEmoji('🥃')"
+                                            style="cursor: pointer; padding: 5px; font-size: 24px; border-radius: 5px; background: rgba(255,255,255,0.05);"
+                                            title="Licor">🥃</span>
+                                        <span onclick="seleccionarEmoji('🍞')"
+                                            style="cursor: pointer; padding: 5px; font-size: 24px; border-radius: 5px; background: rgba(255,255,255,0.05);"
+                                            title="Pan">🍞</span>
+                                        <span onclick="seleccionarEmoji('🥪')"
+                                            style="cursor: pointer; padding: 5px; font-size: 24px; border-radius: 5px; background: rgba(255,255,255,0.05);"
+                                            title="Bocadillo">🥪</span>
+                                        <span onclick="seleccionarEmoji('🍔')"
+                                            style="cursor: pointer; padding: 5px; font-size: 24px; border-radius: 5px; background: rgba(255,255,255,0.05);"
+                                            title="Hamburguesa">🍔</span>
+                                        <span onclick="seleccionarEmoji('🍕')"
+                                            style="cursor: pointer; padding: 5px; font-size: 24px; border-radius: 5px; background: rgba(255,255,255,0.05);"
+                                            title="Pizza">🍕</span>
+                                        <span onclick="seleccionarEmoji('🥗')"
+                                            style="cursor: pointer; padding: 5px; font-size: 24px; border-radius: 5px; background: rgba(255,255,255,0.05);"
+                                            title="Ensalada">🥗</span>
+                                        <span onclick="seleccionarEmoji('🍰')"
+                                            style="cursor: pointer; padding: 5px; font-size: 24px; border-radius: 5px; background: rgba(255,255,255,0.05);"
+                                            title="Postre">🍰</span>
+                                    </div>
+                                </div>
+
+                                <div id="selectorImagen" style="display: none;">
+                                    <input type="file" id="nuevoImagenFile" accept="image/*"
+                                        onchange="previewImagen(event)" style="display: none;">
+                                    <button type="button" onclick="document.getElementById('nuevoImagenFile').click()"
+                                        style="padding: 10px; background: rgba(40, 40, 40, 0.9); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: white; cursor: pointer;">
+                                        📷 Seleccionar Imagen
+                                    </button>
+                                    <div id="previewImagenContainer" style="margin-top: 10px;">
+                                        <img id="previewImagen" src="" alt="Preview"
+                                            style="max-width: 80px; max-height: 80px; border-radius: 8px; display: none;">
+                                    </div>
+                                    <input type="hidden" id="nuevoImagen" value="">
+                                </div>
+                            </div>
+                            <div>
+                                <label style="display: block; margin-bottom: 5px; color: #888;">Stock:</label>
+                                <input type="number" id="nuevoStock" placeholder="50" min="0"
+                                    style="width: 100%; padding: 10px; background: rgba(40, 40, 40, 0.9); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: white;">
+                            </div>
+                            <div>
+                                <label style="display: block; margin-bottom: 5px; color: #888;">Stock Mínimo:</label>
+                                <input type="number" id="nuevoStockMinimo" placeholder="10" min="0"
+                                    style="width: 100%; padding: 10px; background: rgba(40, 40, 40, 0.9); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: white;">
+                            </div>
+                        </div>
+
+                        <div style="text-align: center;">
+                            <button class="btn-success" onclick="agregarNuevoProducto()" style="padding: 12px 30px;">➕
+                                Agregar Producto</button>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 20px;">
+                        <h4 style="color: #ffa502; margin-bottom: 15px;">📋 Productos Actuales</h4>
+                        <div id="listaProductos"
+                            style="max-height: 400px; overflow-y: auto; background: rgba(30, 30, 30, 0.9); border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin: 30px 0;">
+                <h3>🪑 Gestión de Mesas</h3>
+                <div
+                    style="background: rgba(30, 30, 30, 0.9); padding: 20px; border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h4 style="color: #ffa502; margin: 0;">📋 Mesas Actuales</h4>
+                        <button class="btn-success" onclick="abrirModalCrearMesa()">➕ Agregar Mesa</button>
+                    </div>
+                    <div id="listaMesas"
+                        style="max-height: 300px; overflow-y: auto; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gestión de Categorías -->
+            <div style="margin: 30px 0;">
+                <h3>🏷️ Gestión de Categorías</h3>
+                <div
+                    style="background: rgba(30, 30, 30, 0.9); padding: 20px; border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1);">
+
+                    <!-- Agregar nueva categoría -->
+                    <div style="display: flex; gap: 15px; align-items: end; margin-bottom: 20px;">
+                        <div style="flex: 1;">
+                            <label style="display: block; margin-bottom: 5px; color: #888;">Nueva Categoría:</label>
+                            <input type="text" id="nuevaCategoriaNombre" placeholder="Nombre de la categoría"
+                                style="width: 100%; padding: 10px; background: rgba(40, 40, 40, 0.9); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: white;">
+                        </div>
+                        <button class="btn-success" onclick="agregarCategoria()">➕ Agregar</button>
+                    </div>
+
+                    <!-- Lista de categorías -->
+                    <div id="listaCategorias" style="max-height: 200px; overflow-y: auto;">
+                        <!-- Las categorías se cargarán aquí dinámicamente -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gestión de Áreas -->
+            <div style="margin: 30px 0;">
+                <h3>🏢 Gestión de Áreas</h3>
+                <div
+                    style="background: rgba(30, 30, 30, 0.9); padding: 20px; border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1);">
+
+                    <!-- Agregar nueva área -->
+                    <div style="display: flex; gap: 15px; align-items: end; margin-bottom: 20px;">
+                        <div style="flex: 1;">
+                            <label style="display: block; margin-bottom: 5px; color: #888;">Nueva Área:</label>
+                            <input type="text" id="nuevaAreaNombre" placeholder="Nombre del área (ej: Terraza Jardín)"
+                                style="width: 100%; padding: 10px; background: rgba(40, 40, 40, 0.9); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: white;">
+                        </div>
+                        <button class="btn-success" onclick="agregarArea()">➕ Agregar</button>
+                    </div>
+
+                    <!-- Lista de áreas -->
+                    <div id="listaAreas" style="max-height: 200px; overflow-y: auto;">
+                        <!-- Las áreas se cargarán aquí dinámicamente -->
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin: 30px 0;">
+                <h3>💾 Gestión de Datos</h3>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px;">
+                    <button class="btn-success" onclick="exportarDatos()">📥 Exportar Datos</button>
+                    <button class="btn-warning" onclick="document.getElementById('importFile').click()">📤 Importar
+                        Datos</button>
+                    <input type="file" id="importFile" style="display: none;" onchange="importarDatos(event)">
+                    <button class="btn-danger"
+                        onclick="if(confirm('¿Estás seguro? Esto borrará todos los datos.')) limpiarTodo()">🗑️ Limpiar
+                        Todo</button>
+                </div>
+            </div>
+
+            <div style="margin: 30px 0;">
+                <h3>🔄 Backup Automático</h3>
+                <div
+                    style="background: rgba(30, 30, 30, 0.9); padding: 20px; border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                    <p style="margin-bottom: 10px;">✅ Los datos se guardan automáticamente en tu navegador.</p>
+                    <p>⏰ Última actualización: <strong><span id="ultimaActualizacion">-</span></strong></p>
+                </div>
+            </div>
+
+            <div style="margin: 30px 0;">
+                <h3>⌨️ Configuración de Teclado</h3>
+                <div
+                    style="background: rgba(30, 30, 30, 0.9); padding: 20px; border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                    <div
+                        style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
+                        <div>
+                            <h4 style="color: #ffa502; margin-bottom: 5px;">Teclado Táctil Virtual</h4>
+                            <p style="color: #888; font-size: 0.9em; margin: 0;">
+                                Activa esta opción para usar un teclado en pantalla en dispositivos táctiles.
+                                Ideal para tablets y TPV táctiles.
+                            </p>
+                        </div>
+                        <label class="switch" style="margin-left: 20px;">
+                            <input type="checkbox" id="toggleTecladoVirtual" onchange="toggleTecladoVirtual()">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div id="estadoTecladoVirtual"
+                        style="padding: 10px; background: rgba(40, 40, 40, 0.5); border-radius: 8px; text-align: center;">
+                        <span id="textoEstadoTeclado">🔴 Teclado Virtual Desactivado</span>
+                    </div>
+                    <div
+                        style="margin-top: 15px; padding: 15px; background: rgba(255, 165, 2, 0.1); border: 1px solid rgba(255, 165, 2, 0.3); border-radius: 8px;">
+                        <p style="color: #ffa502; margin: 0; font-size: 0.85em;">
+                            <strong>💡 Tip:</strong> Si usas un dispositivo con teclado físico, mantén esta opción
+                            desactivada.
+                            Si usas una tablet o pantalla táctil, actívala para facilitar la entrada de datos.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel de Desarrollo (Solo para pruebas) -->
+            <div style="margin: 30px 0;" id="panelDesarrollo">
+                <h3>🔧 Panel de Desarrollo</h3>
+                <div
+                    style="background: rgba(255, 0, 0, 0.1); border: 2px dashed rgba(255, 0, 0, 0.3); padding: 20px; border-radius: 15px;">
+                    <p style="color: #ff6b6b; margin-bottom: 15px;">⚠️ <strong>SOLO PARA DESARROLLO</strong> - Eliminar
+                        en producción</p>
+
+                    <div style="display: grid; gap: 15px;">
+                        <div>
+                            <h4 style="color: #ffa502; margin-bottom: 10px;">📊 Estado Actual</h4>
+                            <div id="estadoLicenciaDev"
+                                style="background: rgba(40, 40, 40, 0.5); padding: 15px; border-radius: 10px;">
+                                <!-- Se llenará dinámicamente -->
+                            </div>
+                        </div>
+
+                        <div>
+                            <h4 style="color: #ffa502; margin-bottom: 10px;">🔑 Generar Licencias de Prueba</h4>
+                            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                <button onclick="generarLicenciaDev('standard')" class="btn-primary">
+                                    Generar Standard
+                                </button>
+                                <button onclick="generarLicenciaDev('pro')" class="btn-warning">
+                                    Generar Pro
+                                </button>
+                                <button onclick="generarLicenciaDev('premium')" class="btn-success">
+                                    Generar Premium
+                                </button>
+                            </div>
+                        </div>
+                        <div id="licenciaGenerada"
+                            style="margin-top: 10px; padding: 10px; background: rgba(40, 40, 40, 0.5); border-radius: 8px; font-family: monospace; display: none;">
+                            <!-- Aquí se mostrará la licencia generada -->
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 style="color: #ffa502; margin-bottom: 10px;">🗑️ Limpiar Datos de Licencia</h4>
+                        <button onclick="limpiarLicenciaDev()" class="btn-danger">
+                            Resetear Todo
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Pedidos -->
+        <div id="pedidos" class="tab-content">
+            <h2>📋 Registro de Pedidos por Hora</h2>
+
+            <!-- Filtros -->
+            <div
+                style="background: rgba(30, 30, 30, 0.9); padding: 20px; border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 25px;">
+                <h3 style="color: #ffa502; margin-bottom: 15px;">🔍 Filtros</h3>
+                <div
+                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; align-items: end;">
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; color: #888;">📅 Fecha:</label>
+                        <input type="date" id="filtroFecha"
+                            style="width: 100%; padding: 10px; background: rgba(40, 40, 40, 0.9); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: white;">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; color: #888;">🪑 Mesa:</label>
+                        <select id="filtroMesa"
+                            style="width: 100%; padding: 10px; background: rgba(40, 40, 40, 0.9); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: white;">
+                            <option value="">Todas las mesas</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; color: #888;">⏰ Hora desde:</label>
+                        <input type="time" id="filtroHoraDesde"
+                            style="width: 100%; padding: 10px; background: rgba(40, 40, 40, 0.9); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: white;">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; color: #888;">⏰ Hora hasta:</label>
+                        <input type="time" id="filtroHoraHasta"
+                            style="width: 100%; padding: 10px; background: rgba(40, 40, 40, 0.9); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: white;">
+                    </div>
+                    <button class="btn-primary" onclick="aplicarFiltrosPedidos()">🔍 Filtrar</button>
+                    <button class="btn-warning" onclick="limpiarFiltrosPedidos()">🔄 Limpiar</button>
+                </div>
+            </div>
+
+            <!-- Panel de Búsqueda Avanzada (Premium) -->
+            <div id="panelBusquedaAvanzada"></div>
+
+            <!-- Estadísticas por hora -->
+            <div
+                style="background: rgba(30, 30, 30, 0.9); padding: 20px; border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 25px;">
+                <h3 style="color: #ffa502; margin-bottom: 15px;">📊 Resumen por Hora</h3>
+                <div id="estadisticasHora"
+                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
+                </div>
+            </div>
+
+            <!-- Lista de pedidos -->
+            <div
+                style="background: rgba(30, 30, 30, 0.9); padding: 20px; border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 style="color: #ffa502; margin: 0;">📝 Pedidos Detallados</h3>
+                    <button class="btn-success" onclick="exportarPedidosCSV()">📥 Exportar CSV</button>
+                </div>
+                <div id="listaPedidos" style="max-height: 500px; overflow-y: auto;"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MODALES -->
+
+    <!-- Modal para crear/editar mesa -->
+    <div id="gestionMesaModal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <span class="close" onclick="cerrarModalGestionMesa()">&times;</span>
+            <h2 id="tituloModalMesa" style="margin-bottom: 25px; color: #fff;">🪑 Crear Mesa</h2>
+
+            <div style="display: grid; gap: 20px;">
+                <div>
+                    <label style="display: block; margin-bottom: 5px; color: #888;">Nombre/Número:</label>
+                    <input type="text" id="gestionMesaNombre" placeholder="Ej: Mesa 1, VIP, Terraza A..."
+                        style="width: 100%; padding: 12px; background: rgba(40, 40, 40, 0.9); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: white; font-size: 16px;">
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 5px; color: #888;">Capacidad:</label>
+                    <input type="number" id="gestionMesaCapacidad" placeholder="4" min="1" max="20"
+                        style="width: 100%; padding: 12px; background: rgba(40, 40, 40, 0.9); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: white; font-size: 16px;">
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 5px; color: #888;">Descripción (opcional):</label>
+                    <textarea id="gestionMesaDescripcion" placeholder="Ej: Mesa junto a la ventana, Mesa VIP..."
+                        style="width: 100%; padding: 12px; background: rgba(40, 40, 40, 0.9); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: white; font-size: 16px; min-height: 80px; resize: vertical;"></textarea>
+                </div>
+            </div>
+
+            <div style="margin-top: 30px; text-align: center;">
+                <button class="btn-success" onclick="guardarGestionMesa()">💾 Guardar</button>
+                <button class="btn-primary" onclick="cerrarModalGestionMesa()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para gestionar mesa -->
+    <div id="mesaModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="cerrarModal()">&times;</span>
+            <h2 id="mesaTitulo" style="margin-bottom: 25px; color: #fff;">Mesa</h2>
+
+            <h3 style="margin-bottom: 20px;">🍽️ Selecciona Productos</h3>
+            <div class="productos-grid" id="productosGrid"></div>
+
+            <div class="ticket" id="ticketActual">
+                <h3>🧾 Ticket Actual</h3>
+                <div id="ticketItems"></div>
+                <div class="total" id="totalMesa">Total: €0.00</div>
+            </div>
+
+            <div style="margin-top: 30px; text-align: center;">
+                <button class="btn-success" onclick="cobrarMesa()">💰 Cobrar Mesa</button>
+                <button class="btn-danger" onclick="limpiarMesa()">🗑️ Limpiar Mesa</button>
+                <button class="btn-primary" onclick="cerrarModal()">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para editar producto -->
+    <div id="editarProductoModal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <span class="close" onclick="cerrarModalEditarProducto()">&times;</span>
+            <h2 style="margin-bottom: 25px; color: #fff;">✏️ Editar Producto</h2>
+
+            <div style="display: grid; gap: 20px;">
+                <div>
+                    <label style="display: block; margin-bottom: 5px; color: #888;">Nombre:</label>
+                    <input type="text" id="editarNombre" placeholder="Nombre del producto"
+                        style="width: 100%; padding: 12px; background: rgba(40, 40, 40, 0.9); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: white; font-size: 16px;">
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 5px; color: #888;">Precio (€):</label>
+                    <input type="number" id="editarPrecio" placeholder="0.00" step="0.10" min="0"
+                        style="width: 100%; padding: 12px; background: rgba(40, 40, 40, 0.9); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: white; font-size: 16px;">
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 5px; color: #888;">Emoji:</label>
+                    <input type="text" id="editarEmoji" placeholder="🍽️" maxlength="2"
+                        style="width: 100%; padding: 12px; background: rgba(40, 40, 40, 0.9); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: white; font-size: 16px; text-align: center;">
+                </div>
+            </div>
+
+            <div style="margin-top: 30px; text-align: center;">
+                <button class="btn-success" onclick="guardarEdicionProducto()">💾 Guardar Cambios</button>
+                <button class="btn-primary" onclick="cerrarModalEditarProducto()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Ajuste de Stock Individual -->
+    <div id="modalAjusteStock" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <span class="close" onclick="cerrarModalAjusteStock()">&times;</span>
+            <h2 id="tituloAjusteStock" style="margin-bottom: 25px; color: #fff;">📦 Ajustar Stock</h2>
+
+            <div id="infoProductoAjuste"
+                style="background: rgba(255, 107, 107, 0.1); border: 1px solid rgba(255, 107, 107, 0.3); padding: 15px; border-radius: 10px; margin-bottom: 20px; text-align: center;">
+                <h3 id="nombreProductoAjuste" style="color: #fff; margin: 0;"></h3>
+                <p id="stockActualAjuste"
+                    style="color: #ffa502; margin: 5px 0 0 0; font-size: 1.2em; font-weight: bold;"></p>
+            </div>
+
+            <div style="display: grid; gap: 20px;">
+                <div>
+                    <label style="display: block; margin-bottom: 5px; color: #888;">📊 Tipo de ajuste:</label>
+                    <select id="tipoAjuste" onchange="toggleCamposAjuste()"
+                        style="width: 100%; padding: 12px; background: rgba(40, 40, 40, 0.9); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: white; font-size: 16px;">
+                        <option value="establecer">📌 Establecer cantidad exacta</option>
+                        <option value="agregar">➕ Agregar al stock actual</option>
+                        <option value="reducir">➖ Reducir del stock actual</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label id="labelCantidad" style="display: block; margin-bottom: 5px; color: #888;">📦 Nueva
+                        cantidad:</label>
+                    <input type="number" id="cantidadAjuste" placeholder="0" min="0"
+                        style="width: 100%; padding: 12px; background: rgba(40, 40, 40, 0.9); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: white; font-size: 16px;">
+                </div>
+
+                <div>
+                    <label style="display: block; margin-bottom: 5px; color: #888;">📝 Motivo (opcional):</label>
+                    <textarea id="motivoAjuste" placeholder="Ej: Rotura, Caducidad, Inventario físico..."
+                        style="width: 100%; padding: 12px; background: rgba(40, 40, 40, 0.9); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: white; font-size: 16px; min-height: 80px; resize: vertical;"></textarea>
+                </div>
+
+                <div id="previsualizacionAjuste"
+                    style="background: rgba(30, 30, 30, 0.9); padding: 15px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                    <h4 style="color: #ffa502; margin-bottom: 10px;">👁️ Previsualización:</h4>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: #888;">Stock actual:</span>
+                        <span id="stockPrevioAjuste" style="color: #fff;">0</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-top: 5px;">
+                        <span style="color: #888;">Stock resultante:</span>
+                        <span id="stockResultanteAjuste" style="color: #22c55e; font-weight: bold;">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 30px; text-align: center;">
+                <button class="btn-success" onclick="confirmarAjusteStock()">💾 Confirmar Ajuste</button>
+                <button class="btn-primary" onclick="cerrarModalAjusteStock()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Reabastecimiento Masivo -->
+    <div id="modalReabastecimiento" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <span class="close" onclick="cerrarModalReabastecimiento()">&times;</span>
+            <h2 style="margin-bottom: 25px; color: #fff;">📈 Reabastecimiento Masivo</h2>
+
+            <div
+                style="background: rgba(255, 107, 107, 0.1); border: 1px solid rgba(255, 107, 107, 0.3); padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+                <h4 style="color: #ffa502; margin-bottom: 10px;">ℹ️ Información</h4>
+                <p style="color: #e0e0e0; margin: 0;">Esta acción reabastecerá todos los productos que estén por
+                    debajo
+                    de su stock mínimo hasta alcanzar una cantidad objetivo.</p>
+            </div>
+
+            <div style="display: grid; gap: 20px;">
+                <div>
+                    <label style="display: block; margin-bottom: 5px; color: #888;">🎯 Cantidad objetivo:</label>
+                    <input type="number" id="cantidadObjetivo" placeholder="50" min="1" value="50"
+                        style="width: 100%; padding: 12px; background: rgba(40, 40, 40, 0.9); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: white; font-size: 16px;">
+                    <small style="color: #888;">Se establecerá esta cantidad para todos los productos con stock
+                        bajo</small>
+                </div>
+
+                <div>
+                    <label style="display: block; margin-bottom: 5px; color: #888;">📝 Motivo:</label>
+                    <input type="text" id="motivoReabastecimiento"
+                        placeholder="Ej: Reposición semanal, Pedido a proveedor..." value="Reabastecimiento automático"
+                        style="width: 100%; padding: 12px; background: rgba(40, 40, 40, 0.9); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: white; font-size: 16px;">
+                </div>
+
+                <div id="productosAReabastecer"
+                    style="background: rgba(30, 30, 30, 0.9); padding: 15px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); max-height: 200px; overflow-y: auto;">
+                    <h4 style="color: #ffa502; margin-bottom: 10px;">📦 Productos a reabastecer:</h4>
+                    <div id="listaReabastecimiento"></div>
+                </div>
+            </div>
+
+            <div style="margin-top: 30px; text-align: center;">
+                <button class="btn-success" onclick="confirmarReabastecimiento()">📈 Confirmar
+                    Reabastecimiento</button>
+                <button class="btn-primary" onclick="cerrarModalReabastecimiento()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Cobro con Cambio -->
+    <div id="modalCobro" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <span class="close" onclick="cerrarModalCobro()">&times;</span>
+            <h2 style="margin-bottom: 25px; color: #fff; text-align: center;">💰 Procesar Cobro</h2>
+
+            <div style="text-align: center; margin-bottom: 30px;">
+                <div
+                    style="background: rgba(255, 107, 107, 0.2); border: 1px solid rgba(255, 107, 107, 0.5); padding: 20px; border-radius: 15px; margin-bottom: 20px;">
+                    <h3 style="color: #ffa502; margin: 0;">Total a Cobrar</h3>
+                    <div id="totalACobrar" style="font-size: 2.5em; font-weight: bold; color: #fff; margin-top: 10px;">
+                        €0.00</div>
+                </div>
+            </div>
+
+            <div style="display: grid; gap: 20px;">
+                <div>
+                    <label style="display: block; margin-bottom: 5px; color: #888; font-weight: 600;">💳 Método de
+                        Pago:</label>
+                    <select id="metodoPago" onchange="toggleCantidadRecibida()"
+                        style="width: 100%; padding: 12px; background: rgba(40, 40, 40, 0.9); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: white; font-size: 16px;">
+                        <option value="efectivo">💵 Efectivo</option>
+                        <option value="tarjeta">💳 Tarjeta</option>
+                        <option value="bizum">📱 Bizum</option>
+                        <option value="transferencia">🏦 Transferencia</option>
+                    </select>
+                </div>
+
+                <div id="seccionEfectivo">
+                    <label style="display: block; margin-bottom: 5px; color: #888; font-weight: 600;">💵 Cantidad
+                        Recibida:</label>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <input type="number" id="cantidadRecibida" placeholder="0.00" step="0.01" min="0"
+                            oninput="calcularCambio()"
+                            style="flex: 1; padding: 12px; background: rgba(40, 40, 40, 0.9); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: white; font-size: 16px;">
+                        <button type="button" onclick="establecerImporteExacto()"
+                            style="background: #4a5568; color: white; border: none; padding: 12px 15px; border-radius: 8px; cursor: pointer; font-size: 14px; white-space: nowrap;">
+                            Exacto
+                        </button>
+                    </div>
+                </div>
+
+                <div id="seccionCambio"
+                    style="background: rgba(30, 30, 30, 0.9); padding: 15px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="color: #888; font-weight: 600;">💰 Cambio:</span>
+                        <span id="cambioCalculado"
+                            style="font-size: 1.5em; font-weight: bold; color: #22c55e;">€0.00</span>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 30px; text-align: center; display: flex; gap: 15px; justify-content: center;">
+                <button id="confirmarCobroBtn" class="btn-success" onclick="confirmarCobro()" disabled
+                    style="opacity: 0.5; padding: 15px 30px; font-size: 16px; font-weight: bold;">
+                    ✅ Confirmar Cobro
+                </button>
+                <button class="btn-primary" onclick="cerrarModalCobro()" style="padding: 15px 30px; font-size: 16px;">
+                    ❌ Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Teclado Numérico Virtual -->
+    <div id="tecladoNumerico" class="teclado-numerico" style="display: none;">
+        <div class="teclado-container">
+            <div class="teclado-display">
+                <input type="text" id="tecladoInput" readonly>
+            </div>
+            <div class="teclado-grid">
+                <button class="tecla-num" onclick="agregarNumero('7')">7</button>
+                <button class="tecla-num" onclick="agregarNumero('8')">8</button>
+                <button class="tecla-num" onclick="agregarNumero('9')">9</button>
+                <button class="tecla-func tecla-borrar" onclick="borrarUltimo()">⌫</button>
+
+                <button class="tecla-num" onclick="agregarNumero('4')">4</button>
+                <button class="tecla-num" onclick="agregarNumero('5')">5</button>
+                <button class="tecla-num" onclick="agregarNumero('6')">6</button>
+                <button class="tecla-func tecla-limpiar" onclick="limpiarTeclado()">C</button>
+
+                <button class="tecla-num" onclick="agregarNumero('1')">1</button>
+                <button class="tecla-num" onclick="agregarNumero('2')">2</button>
+                <button class="tecla-num" onclick="agregarNumero('3')">3</button>
+                <button class="tecla-func tecla-decimal" onclick="agregarDecimal()">.</button>
+
+                <button class="tecla-num tecla-cero" onclick="agregarNumero('0')">0</button>
+                <button class="tecla-num" onclick="agregarNumero('00')">00</button>
+                <button class="tecla-func tecla-ok" onclick="confirmarTeclado()">✓</button>
+            </div>
+            <button class="tecla-cerrar" onclick="cerrarTeclado()">✕ Cerrar</button>
+        </div>
+    </div>
+
+    <!-- Teclado Completo Virtual -->
+    <div id="tecladoCompleto" class="teclado-completo" style="display: none;">
+        <div class="teclado-container">
+            <div class="teclado-display">
+                <input type="text" id="tecladoCompletoInput" readonly>
+            </div>
+            <div class="teclado-grid-completo">
+                <!-- Primera fila -->
+                <button class="tecla" onclick="agregarLetra('1')">1</button>
+                <button class="tecla" onclick="agregarLetra('2')">2</button>
+                <button class="tecla" onclick="agregarLetra('3')">3</button>
+                <button class="tecla" onclick="agregarLetra('4')">4</button>
+                <button class="tecla" onclick="agregarLetra('5')">5</button>
+                <button class="tecla" onclick="agregarLetra('6')">6</button>
+                <button class="tecla" onclick="agregarLetra('7')">7</button>
+                <button class="tecla" onclick="agregarLetra('8')">8</button>
+                <button class="tecla" onclick="agregarLetra('9')">9</button>
+                <button class="tecla" onclick="agregarLetra('0')">0</button>
+                <button class="tecla tecla-func" onclick="borrarUltimoCompleto()">⌫</button>
+
+                <!-- Segunda fila -->
+                <button class="tecla" onclick="agregarLetra('Q')">Q</button>
+                <button class="tecla" onclick="agregarLetra('W')">W</button>
+                <button class="tecla" onclick="agregarLetra('E')">E</button>
+                <button class="tecla" onclick="agregarLetra('R')">R</button>
+                <button class="tecla" onclick="agregarLetra('T')">T</button>
+                <button class="tecla" onclick="agregarLetra('Y')">Y</button>
+                <button class="tecla" onclick="agregarLetra('U')">U</button>
+                <button class="tecla" onclick="agregarLetra('I')">I</button>
+                <button class="tecla" onclick="agregarLetra('O')">O</button>
+                <button class="tecla" onclick="agregarLetra('P')">P</button>
+                <button class="tecla tecla-func" onclick="limpiarTecladoCompleto()">CLR</button>
+
+                <!-- Tercera fila -->
+                <button class="tecla" onclick="agregarLetra('A')">A</button>
+                <button class="tecla" onclick="agregarLetra('S')">S</button>
+                <button class="tecla" onclick="agregarLetra('D')">D</button>
+                <button class="tecla" onclick="agregarLetra('F')">F</button>
+                <button class="tecla" onclick="agregarLetra('G')">G</button>
+                <button class="tecla" onclick="agregarLetra('H')">H</button>
+                <button class="tecla" onclick="agregarLetra('J')">J</button>
+                <button class="tecla" onclick="agregarLetra('K')">K</button>
+                <button class="tecla" onclick="agregarLetra('L')">L</button>
+                <button class="tecla" onclick="agregarLetra('Ñ')">Ñ</button>
+                <button class="tecla tecla-espacio-pequeno" onclick="agregarLetra(' ')">␣</button>
+
+                <!-- Cuarta fila -->
+                <button class="tecla" onclick="agregarLetra('Z')">Z</button>
+                <button class="tecla" onclick="agregarLetra('X')">X</button>
+                <button class="tecla" onclick="agregarLetra('C')">C</button>
+                <button class="tecla" onclick="agregarLetra('V')">V</button>
+                <button class="tecla" onclick="agregarLetra('B')">B</button>
+                <button class="tecla" onclick="agregarLetra('N')">N</button>
+                <button class="tecla" onclick="agregarLetra('M')">M</button>
+                <button class="tecla" onclick="agregarLetra('.')">.</button>
+                <button class="tecla" onclick="agregarLetra(',')">,</button>
+                <button class="tecla tecla-func tecla-ok" onclick="confirmarTecladoCompleto()">✓</button>
+            </div>
+            <div class="teclado-fila-inferior">
+                <button class="tecla-espacio" onclick="agregarLetra(' ')">ESPACIO</button>
+                <button class="tecla-cerrar" onclick="cerrarTecladoCompleto()">✕ Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="DatabaseManager.js"></script>
+    <script src="script.js"></script>
+
+    <!-- Modal Premium -->
+    <div id="modalPremium" class="modal">
+        <div class="modal-content" style="max-width: 900px;">
+            <span class="close" onclick="cerrarModalPremium()">&times;</span>
+            <h2
+                style="background: linear-gradient(135deg, #ff6b6b 0%, #ffa502 50%, #ffd700 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-align: center; margin-bottom: 30px; font-size: 2.5em;">
+                ⚡ Potencia tu Negocio
+            </h2>
+
+            <!-- Planes de precios -->
+            <div
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 30px;">
+
+                <!-- Plan Standard -->
+                <div
+                    style="background: rgba(40, 40, 40, 0.9); padding: 25px; border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1); position: relative;">
+                    <h3 style="color: #888; text-align: center; margin-bottom: 10px;">Standard</h3>
+                    <div style="text-align: center; margin: 20px 0;">
+                        <div style="font-size: 3em; font-weight: bold; color: #4a5568;">49€</div>
+                        <div style="color: #888;">al mes</div>
+                        <div style="color: #666; font-size: 0.9em; margin-top: 5px;">
+                            <s style="opacity: 0.7;">Gratis</s> → Con soporte
+                        </div>
+                    </div>
+                    <ul style="list-style: none; padding: 0; margin: 20px 0;">
+                        <li style="padding: 8px 0; color: #e0e0e0;">✅ Control de mesas completo</li>
+                        <li style="padding: 8px 0; color: #e0e0e0;">✅ Gestión de productos</li>
+                        <li style="padding: 8px 0; color: #e0e0e0;">✅ Facturación completa</li>
+                        <li style="padding: 8px 0; color: #e0e0e0;">✅ Inventario completo</li>
+                        <li style="padding: 8px 0; color: #e0e0e0;">✅ Exportación de datos</li>
+                        <li style="padding: 8px 0; color: #e0e0e0;">✅ Soporte técnico</li>
+                        <li style="padding: 8px 0; color: #888;">✗ Sin análisis avanzado</li>
+                        <li style="padding: 8px 0; color: #888;">✗ Sin gráficos</li>
+                    </ul>
+                    <button class="btn-primary" onclick="seleccionarPlan('standard')" style="width: 100%;">
+                        Activar Standard
+                    </button>
+                </div>
+
+                <!-- Plan Pro - MÁS POPULAR -->
+                <div
+                    style="background: linear-gradient(135deg, rgba(255, 107, 107, 0.1), rgba(255, 165, 2, 0.1)); padding: 25px; border-radius: 15px; border: 2px solid #ffa502; position: relative; transform: scale(1.05); box-shadow: 0 10px 30px rgba(255, 165, 2, 0.3);">
+                    <div
+                        style="position: absolute; top: -15px; left: 50%; transform: translateX(-50%); background: #ffa502; color: white; padding: 5px 20px; border-radius: 20px; font-weight: bold; font-size: 0.9em;">
+                        🔥 MÁS POPULAR
+                    </div>
+                    <h3 style="color: #ffa502; text-align: center; margin-bottom: 10px; margin-top: 10px;">Pro</h3>
+                    <div style="text-align: center; margin: 20px 0;">
+                        <div style="font-size: 3em; font-weight: bold; color: #ffa502;">69€</div>
+                        <div style="color: #888;">al mes</div>
+                        <div style="color: #22c55e; font-size: 0.9em; margin-top: 5px;">
+                            💰 Ahorra 468€/año vs. competencia
+                        </div>
+                    </div>
+                    <ul style="list-style: none; padding: 0; margin: 20px 0;">
+                        <li style="padding: 8px 0; color: #fff;">✅ <strong>Todo de Standard +</strong></li>
+                        <li style="padding: 8px 0; color: #fff;">✅ <strong>Análisis de ventas diarias</strong></li>
+                        <li style="padding: 8px 0; color: #fff;">✅ <strong>Gráficos básicos</strong></li>
+                        <li style="padding: 8px 0; color: #fff;">✅ <strong>Filtros por categoría</strong></li>
+                        <li style="padding: 8px 0; color: #fff;">✅ <strong>Exportación CSV mejorada</strong></li>
+                        <li style="padding: 8px 0; color: #fff;">✅ <strong>Historial 90 días</strong></li>
+                        <li style="padding: 8px 0; color: #fff;">✅ <strong>Soporte prioritario</strong></li>
+                    </ul>
+                    <button class="btn-warning" onclick="seleccionarPlan('pro')"
+                        style="width: 100%; padding: 15px; font-size: 16px; font-weight: bold; animation: pulse 2s infinite;">
+                        🚀 Elegir Pro
+                    </button>
+                </div>
+
+                <!-- Plan Premium -->
+                <div
+                    style="background: rgba(30, 30, 30, 0.9); padding: 25px; border-radius: 15px; border: 1px solid rgba(255, 215, 0, 0.3); position: relative;">
+                    <div
+                        style="position: absolute; top: -15px; right: 20px; background: linear-gradient(135deg, #ffd700, #ffed4e); color: #000; padding: 5px 15px; border-radius: 20px; font-weight: bold; font-size: 0.8em;">
+                        ⭐ ÉLITE
+                    </div>
+                    <h3
+                        style="background: linear-gradient(135deg, #ffd700, #ffed4e); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-align: center; margin-bottom: 10px;">
+                        Premium</h3>
+                    <div style="text-align: center; margin: 20px 0;">
+                        <div
+                            style="font-size: 3em; font-weight: bold; background: linear-gradient(135deg, #ffd700, #ffed4e); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                            130€</div>
+                        <div style="color: #888;">al mes</div>
+                        <div style="color: #ffd700; font-size: 0.9em; margin-top: 5px;">
+                            👑 La suite completa
+                        </div>
+                    </div>
+                    <ul style="list-style: none; padding: 0; margin: 20px 0;">
+                        <li style="padding: 8px 0; color: #ffd700;">★ <strong>Todo de Pro +</strong></li>
+                        <li style="padding: 8px 0; color: #e0e0e0;">★ Análisis predictivo IA</li>
+                        <li style="padding: 8px 0; color: #e0e0e0;">★ Gráficos interactivos ilimitados</li>
+                        <li style="padding: 8px 0; color: #e0e0e0;">★ Dashboard personalizable</li>
+                        <li style="padding: 8px 0; color: #e0e0e0;">★ API para integraciones</li>
+                        <li style="padding: 8px 0; color: #e0e0e0;">★ Multi-sucursal</li>
+                        <li style="padding: 8px 0; color: #e0e0e0;">★ Soporte 24/7 dedicado</li>
+                        <li style="padding: 8px 0; color: #e0e0e0;">★ Formación personalizada</li>
+                    </ul>
+                    <button class="btn-success" onclick="seleccionarPlan('premium')"
+                        style="width: 100%; background: linear-gradient(135deg, #ffd700, #ffed4e); color: #000; border: none;">
+                        👑 Elegir Premium
+                    </button>
+                </div>
+            </div>
+
+            <!-- Garantías -->
+            <div style="text-align: center; margin: 30px 0;">
+                <div style="display: flex; justify-content: center; gap: 30px; flex-wrap: wrap;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 2em;">🔒</span>
+                        <span>Pago 100% Seguro</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 2em;">💰</span>
+                        <span>30 días de garantía</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 2em;">🚫</span>
+                        <span>Cancela cuando quieras</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formulario de activación (oculto por defecto) -->
+            <div id="formularioActivacion" style="display: none; margin-top: 30px;">
+                <!-- Aquí irá el formulario cuando seleccionen un plan -->
+            </div>
+
+            <!-- Opciones -->
+            <div id="opcionesPremium">
+
+                <div style="text-align: center; margin: 20px 0;">
+                    <span style="color: #888;">— O —</span>
+                </div>
+
+                <div style="background: rgba(40, 40, 40, 0.9); padding: 20px; border-radius: 10px;">
+                    <h4 style="color: #ffa502; margin-bottom: 15px;">🔑 ¿Ya tienes una licencia?</h4>
+                    <input type="text" id="licenciaInput" placeholder="PREM-XXXX-XXXX-XXXX"
+                        style="width: 100%; padding: 12px; background: rgba(30, 30, 30, 0.9); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: white; margin-bottom: 10px; font-family: monospace; text-align: center;">
+                    <button class="btn-primary" onclick="validarLicencia()" style="width: 100%;">
+                        Activar Licencia
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mensaje de éxito (oculto por defecto) -->
+            <div id="mensajeExito"
+                style="display: none; background: rgba(34, 197, 94, 0.2); border: 1px solid #22c55e; padding: 20px; border-radius: 10px; text-align: center;">
+                <h3 style="color: #22c55e; margin-bottom: 10px;">✅ ¡Activación Exitosa!</h3>
+                <p id="mensajeExitoTexto">Tu versión premium está activa.</p>
+                <button class="btn-success" onclick="location.reload()" style="margin-top: 15px;">
+                    Recargar Aplicación
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+
+</html>
